@@ -1,4 +1,4 @@
-import MusicList from '../../components/music-list/index.vue'
+import MusicList from '@/components/music-list'
 import storage from 'good-storage'
 import { processSongs } from '@/services/song'
 

@@ -3,8 +3,6 @@ export default function useShortcut (props, groupRef) {
   const ANCHOR_HEIGHT = 18
   const scrollRef = ref(null)
 
-  console.log('props', props, groupRef)
-
   const shortcutList = computed(() => {
     return props.data.map((group) => {
       return group.title

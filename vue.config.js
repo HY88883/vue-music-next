@@ -4,11 +4,12 @@ module.exports = {
   lintOnSave: false,
   css: {
     loaderOptions: {
-      // 给 sass-loader 传递选项
       sass: {
-        prependData:
-        `  @import "@/assets/scss/variable.scss";
-        @import "@/assets/scss/mixin.scss";`
+        // 全局引入变量和 mixin
+        additionalData: `
+          @import "@/assets/scss/variable.scss";
+          @import "@/assets/scss/mixin.scss";
+        `
       }
     }
   },
@@ -16,5 +17,13 @@ module.exports = {
     before (app) {
       registerRouter(app)
     }
-  }
+  },
+  configureWebpack: (config) => {
+    if (process.env.npm_config_report) {
+      const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+      config.plugins.push(new BundleAnalyzerPlugin())
+    }
+  },
+  productionSourceMap: false,
+  publicPath: process.env.NODE_ENV === 'production' ? '/music-next/' : '/'
 }

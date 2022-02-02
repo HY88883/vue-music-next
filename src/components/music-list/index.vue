@@ -1,12 +1,11 @@
 <template>
-<div class="music-list">
+  <div class="music-list">
     <div
       class="back"
       @click="goBack"
     >
       <i class="icon-back"></i>
     </div>
-
     <h1 class="title">{{ title }}</h1>
     <div
       class="bg-image"
@@ -51,22 +50,19 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll'
 import SongList from '@/components/base/song-list'
+import Scroll from '@/components/wrap-scroll'
+import { mapActions, mapState } from 'vuex'
+
 const RESERVED_HEIGHT = 40
 
 export default {
   name: 'music-list',
   components: {
-    Scroll,
-    SongList
+    SongList,
+    Scroll
   },
   props: {
-    noResultText: {
-      type: String,
-      default: '抱歉，没有找到可播放的歌曲'
-    },
-    loading: Boolean,
     songs: {
       type: Array,
       default () {
@@ -74,7 +70,13 @@ export default {
       }
     },
     title: String,
-    pic: String
+    pic: String,
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉，没有找到可播放的歌曲'
+    },
+    rank: Boolean
   },
   data () {
     return {
@@ -84,12 +86,8 @@ export default {
     }
   },
   computed: {
-    scrollStyle () {
-      // const bottom = this.playlist.length ? '60px' : '0'
-      return {
-        top: `${this.imageHeight}px`,
-        // bottom
-      }
+    noResult () {
+      return !this.loading && !this.songs.length
     },
     playBtnStyle () {
       let display = ''
@@ -98,20 +96,6 @@ export default {
       }
       return {
         display
-      }
-    },
-    noResult () {
-      return !this.loading && !this.songs.length
-    },
-    filterStyle () {
-      let blur = 0
-      const scrollY = this.scrollY
-      const imageHeight = this.imageHeight
-      if (scrollY >= 0) {
-        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
-      }
-      return {
-        backdropFilter: `blur(${blur}px)`
       }
     },
     bgImageStyle () {
@@ -138,9 +122,30 @@ export default {
         paddingTop,
         height,
         backgroundImage: `url(${this.pic})`,
-        transform: `scale(${scale}) translateZ(${translateZ}px)`
+        transform: `scale(${scale})translateZ(${translateZ}px)`
       }
-    }
+    },
+    scrollStyle () {
+      const bottom = this.playlist.length ? '60px' : '0'
+      return {
+        top: `${this.imageHeight}px`,
+        bottom
+      }
+    },
+    filterStyle () {
+      let blur = 0
+      const scrollY = this.scrollY
+      const imageHeight = this.imageHeight
+      if (scrollY >= 0) {
+        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`
+      }
+    },
+    ...mapState([
+      'playlist'
+    ])
   },
   mounted () {
     this.imageHeight = this.$refs.bgImage.clientHeight
@@ -152,13 +157,26 @@ export default {
     },
     onScroll (pos) {
       this.scrollY = -pos.y
-    }
+    },
+    selectItem ({ song, index }) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    random () {
+      this.randomPlay(this.songs)
+    },
+    ...mapActions([
+      'selectPlay',
+      'randomPlay'
+    ])
   }
 }
 </script>
 
 <style lang="scss" scoped>
- .music-list {
+  .music-list {
     position: relative;
     height: 100%;
     .back {

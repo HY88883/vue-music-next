@@ -53,14 +53,13 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll'
+import Scroll from '@/components/wrap-scroll/index'
 import useFixed from './use-fixed'
 import useShortcut from './use-shortcut'
+
 export default {
   name: 'index-list',
-  components: {
-    Scroll
-  },
+  components: { Scroll },
   props: {
     data: {
       type: Array,
@@ -71,31 +70,33 @@ export default {
   },
   emits: ['select'],
   setup (props, { emit }) {
-    const { fixedTitle, groupRef, onScroll, currentIndex, fixedStyle } = useFixed(props)
-    const { onShortcutTouchStart, onShortcutTouchMove, shortcutList, scrollRef } = useShortcut(props, groupRef)
+    const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
+    const { shortcutList, scrollRef, onShortcutTouchStart, onShortcutTouchMove } = useShortcut(props, groupRef)
 
     function onItemClick (item) {
       emit('select', item)
     }
 
     return {
-      fixedTitle,
+      onItemClick,
+      // fixed
       groupRef,
       onScroll,
-      currentIndex,
+      fixedTitle,
       fixedStyle,
-      onShortcutTouchStart,
-      onShortcutTouchMove,
+      currentIndex,
+      // shortcut
       shortcutList,
       scrollRef,
-      onItemClick
+      onShortcutTouchStart,
+      onShortcutTouchMove
     }
   }
 }
 </script>
 
-<style lang="scss" scoped >
-     .index-list {
+<style lang="scss" scoped>
+  .index-list {
     position: relative;
     width: 100%;
     height: 100%;

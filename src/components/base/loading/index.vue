@@ -16,7 +16,7 @@ export default {
     }
   },
   methods: {
-    addTitle (title) {
+    setTitle (title) {
       this.title = title
     }
   }
